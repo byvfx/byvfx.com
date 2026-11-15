@@ -194,10 +194,10 @@ img { max-width: 100%; }
     </div>
 
     <div class="figures">
-      <div class="fig"><b>347</b><span>videos uploaded to YouTube since mid-October: 218 segments, 114 Shorts, 11 compilations</span></div>
+      <div class="fig"><b>390</b><span>videos uploaded to YouTube since mid-October: 253 segments, 122 Shorts, 11 compilations, 4 clips</span></div>
       <div class="fig"><b>~$3.50</b><span>for a full run on an 8-hour stream, transcription included (median of 27 streams)</span></div>
       <div class="fig"><b>2,732 h</b><span>of a video archive transcribed and indexed for full-text search</span></div>
-      <div class="fig"><b>799</b><span>offline tests, run with lint in CI on Linux and Windows on every push</span></div>
+      <div class="fig"><b>975</b><span>offline tests, run with lint in CI on Linux and Windows on every push</span></div>
     </div>
   </header>
 
@@ -283,7 +283,7 @@ img { max-width: 100%; }
     </div>
 
     <div class="flowline" aria-label="Review flow">
-      <div class="fl-step"><span class="eyebrow">Arrives</span><b>Video, title, description, chapters, cover</b><span>in Kitsu, as a Discord card, and in the war room queue</span></div>
+      <div class="fl-step"><span class="eyebrow">Arrives</span><b>Video, title, description, chapters, cover</b><span>already checked, in Kitsu, as a Discord card, and in the war room queue</span></div>
       <div class="fl-step"><span class="eyebrow">Decide</span><b>Approve · reject · hold · note</b><span>from any of the three, with undo</span></div>
       <div class="fl-step alt"><span class="eyebrow">A note</span><b>Becomes a retake</b><span>re-cut, re-trimmed or redrawn automatically, then back to review</span></div>
       <div class="fl-step"><span class="eyebrow">Approved</span><b>Scheduled and uploaded</b><span>the next free slot on YouTube, and on X while the topic is hot</span></div>
@@ -293,6 +293,7 @@ img { max-width: 100%; }
       <div class="dec">
         <h3>Guardrails before review</h3>
         <p>Some items arrive already flagged. A Short with more than five seconds of voices that aren't the show's own (usually a video playing on stream) is held, and its card shows the seconds counted from the speaker labels. The reviewer releases it when the show's commentary carries the moment.</p>
+        <p>Every item also goes through pre-flight checks before it is published for review: the text against the house style, a Short's webcam panels for a face cut off at the edge, the cover for the wrong person, and the subject for a name in the title that the video never says. Findings show as a column in Kitsu, a line on the Discord card and a badge in the war room.</p>
         <p class="why">The bot sends a DM when something needs a person: a stream ready for review, a failed upload, a stage that failed after its retries, recorder trouble, a filling disk. Quiet hours hold these until morning, and a daily digest arrives at 09:00.</p>
       </div>
       <div class="dec">
@@ -300,6 +301,7 @@ img { max-width: 100%; }
         <p>A web page served by the always-on service, and installable on a phone over Tailscale. It shows what is live and whether it is recording, where each stream is in the pipeline, the review queue and the upload schedule, plus panels for GPU jobs, costs and analytics.</p>
         <p class="why">It also opens the cast library, the news stories and the research dossiers, so all of the tools above have one place to work from.</p>
         <p class="why">A usability pass made it safe to use quickly: a bulk approve touches only the items on screen (approved items upload on their own), a double tap sends once, Sync and Replan stay greyed out until the work is really done, closing a window with typed edits asks first, and the header turns amber, then red, when its data goes stale.</p>
+        <p class="why">When something fails, its error toast opens a log window with the service's own log, filterable by word or errors only. Keys and tokens are blanked on the server before any filter runs, so a search can't be used to guess one a character at a time.</p>
       </div>
     </div>
 
@@ -325,6 +327,13 @@ img { max-width: 100%; }
         <div class="node"><b>Who's this?</b><span>Pause on a face, draw a box, and it says who it looks like. One click enrolls the face and names every look-alike in the stream.</span></div>
         <div class="node"><b>Schedule</b><span>Drag an item onto an open slot to pin it. The page warns before a drop breaks the spacing rules.</span></div>
       </div>
+    </div>
+
+    <div class="story">
+      <div class="eyebrow">Pre-flight checks · tuned on past rejects</div>
+      <h3>Catch what a reviewer would reject, before they see it</h3>
+      <p>The checks were built from the items reviewers had actually rejected. A Short's webcam panels are sampled at eight frames and run through local face detection; a face counts as cut off only when an eye, the nose or the mouth crosses the panel edge, since a box touching the edge was usually someone leaning in. The cover check first compares the recognised face with the person the cover is about, then makes one vision-model call. Results are keyed to what was read, so nothing is checked or paid for twice.</p>
+      <p class="why">A backtest over 808 past covers cost $8.89. It caught both covers reviewers had rejected and flagged 67 of 780 approved ones, among them black frames and the same wrong side photo reused on several covers. Most of the rest were a cast member in a costume. A prompt line to allow costumes cleared those, but its first wording also hid a real wrong photo in every run, so it was narrowed until the photo was caught again.</p>
     </div>
 
     <div class="story">
@@ -378,7 +387,8 @@ img { max-width: 100%; }
       </div>
       <div class="dec">
         <h3>It checks on itself</h3>
-        <p><code>clipper checkup</code> reads only the files the services write: stale heartbeats, a stage stuck for hours, a recording nobody picked up, an upload late for its slot, a title over YouTube's limits. <code>clipper status</code> puts services, streams, review counts, the next releases and the month's spend on one screen.</p>
+        <p><code>clipper checkup</code> reads only the files the services write: stale heartbeats, a stage stuck for hours, a recording nobody picked up, an upload late for its slot, a title over YouTube's limits. <code>clipper status</code> opens with what needs a person, then puts services, recent streams, review counts, the next releases and the month's spend on one screen.</p>
+        <p class="why">Housekeeping runs on its own too. <code>clipper streams prune</code> clears the source video of streams that are finished, never anything still waiting, scheduled or pinned. <code>clipper backup</code> zips the parts made by hand (config, schedule, enrolled faces, voices, layouts, cast photos, review state) every week, without secrets.</p>
         <p class="why">A nightly report is built on top of it. When nothing is wrong it sends a one-line DM with no model call. When something is wrong, Claude Code runs headless with read-only tools and sends one DM with its diagnosis. If that fails, the raw findings go out instead. A weekly digest covers runs, uploads, spend and review decisions, and once a month a read-only Claude pass reads those weeks to find the problems that keep coming back.</p>
       </div>
     </div>
@@ -436,7 +446,8 @@ img { max-width: 100%; }
       <li><b>Archive search.</b> Thousands of hours of a back catalog transcribed in bulk on Modal and indexed with SQLite full-text search, so you can ask questions across years of video.</li>
       <li><b>Weekly issue.</b> A ten-page magazine of the week's stories, laid out and rendered automatically for social carousels.</li>
       <li><b>Narrated pieces.</b> Scripts read by an ElevenLabs voice, cut together with source clips, and finished in DaVinci Resolve through its scripting API. The case study below is one of them.</li>
-      <li><b>B-roll library.</b> Free footage for those cuts, found on NASA, DVIDS, the Prelinger Archives and Wikimedia Commons. A clip is kept only when its licence is public domain or CC0 and its credits name no outside owner. Sound is off by default, since agency videos often carry licensed music. For a long film, only the part asked for is downloaded.</li>
+      <li><b>B-roll library.</b> Free footage for those cuts, found on NASA, DVIDS, the Prelinger Archives, Pixabay and Wikimedia Commons. A clip is kept only when its licence is on an allow list (public domain, CC0 or Pixabay's) and its credits name no outside owner. Sound is off by default, since agency videos often carry licensed music. For a long film, only the part asked for is downloaded.</li>
+      <li><b>Clip art library.</b> Pictures for covers and overlays from museum open-access collections (the Met, the Cleveland Museum of Art), Commons drawings, open-licence icon sets and Pixabay, under the same allow-list rule. Each source's terms were read first; sites whose licences couldn't be checked, or that block scripts, were left out.</li>
     </ul>
   </section>
 
@@ -500,12 +511,12 @@ img { max-width: 100%; }
       <h2>What it is built with</h2>
     </div>
     <dl class="stack-list col">
-      <dt>Core</dt><dd>Python 3, argparse CLI (54 commands in 5 groups, with did-you-mean suggestions), uv, ruff (extra rules and a complexity cap), pytest, GitHub Actions on Linux and Windows</dd>
+      <dt>Core</dt><dd>Python 3, argparse CLI (58 commands in 5 groups, with did-you-mean suggestions, shell completion, <code>--json</code> output and <code>latest</code> in place of a stream id), uv, ruff (extra rules and a complexity cap), pytest, GitHub Actions on Linux and Windows</dd>
       <dt>Media</dt><dd>ffmpeg, WhisperX, OpenCV (YuNet + SFace face recognition), Pillow, Playwright for rendered layouts</dd>
       <dt>AI</dt><dd>Claude Haiku / Sonnet / Opus, OpenRouter, ElevenLabs, versioned prompt files</dd>
       <dt>Infra</dt><dd>Docker Compose on a NAS (Debian image, ffmpeg 7.1, Intel Quick Sync), Modal (GPU), Tailscale</dd>
       <dt>Services</dt><dd>Kitsu (review), discord.py (review bot), YouTube Data and Analytics APIs, X API</dd>
-      <dt>Docs</dt><dd>A 47-page wiki built from the repo on every push, with a test that checks its links. It includes install checklists, a page on how the processes talk to each other, and the model trials. A changelog too.</dd>
+      <dt>Docs</dt><dd>A 50-page wiki built from the repo on every push, with a test that checks its links. It includes install checklists, a page on how the processes talk to each other, and the model trials. A changelog too.</dd>
     </dl>
   </section>
 
@@ -514,7 +525,7 @@ img { max-width: 100%; }
       <div class="eyebrow">How it was built</div>
       <h2>One person, with an AI pair programmer</h2>
       <p>I designed the system and made the product calls: what gets automated, where a person stays in the loop, what each stage may spend, and how the schedule behaves. I built it with Claude Code as a pair programmer. The project's conventions are written down in the repo, and every pull request that changes code gets two reviews before merge. Claude Code reviews the branch locally and its findings are fixed before the PR opens; then Copilot reviews it on GitHub, and each comment is checked against the code and answered. For a while a third reviewer, Grok through OpenRouter, ran on every PR. I chose it after 13 models reviewed the same real PR, three of which made the same false claim about an ffmpeg filter that a test disproved. It found real bugs but took about 25 minutes a PR, so it is now a by-hand second opinion. Dependabot keeps the dependencies current.</p>
-      <p>About 37,000 lines across 111 modules and some 680 commits in under four weeks, running every day since the first week.</p>
+      <p>About 42,000 lines across 122 modules and some 790 commits in under four weeks, running every day since the first week.</p>
       <p>Once it was running, I audited the code as if handing it to another team and worked through the findings in tiers:</p>
       <ul>
         <li>Broke five import cycles.</li>
@@ -529,7 +540,7 @@ img { max-width: 100%; }
   </section>
 
   <footer class="wrap" style="padding-left:0;padding-right:0">
-    Figures as of 13 November 2026, from the project's own upload, cost and test logs. The source is on <a href="https://github.com/byvfx/clipper">GitHub</a> and the docs are in its <a href="https://github.com/byvfx/clipper/wiki">wiki</a>.
+    Figures as of 14 November 2026, from the project's own upload, cost and test logs. The source is on <a href="https://github.com/byvfx/clipper">GitHub</a> and the docs are in its <a href="https://github.com/byvfx/clipper/wiki">wiki</a>.
   </footer>
 </div>
 
