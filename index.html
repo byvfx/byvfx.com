@@ -22,7 +22,7 @@
     --line: #333;
     --text: #ececec;
     --muted: #a3a3a3;
-    --amber: #e3b45f;
+    --amber: #E0A040;
     --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
     --gutter: clamp(16px, 4vw, 48px);
@@ -42,9 +42,13 @@
   .mono { font-family: var(--mono); font-size: 13px; letter-spacing: .01em; }
   .muted { color: var(--muted); }
 
-  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 22px; padding-bottom: 22px; }
-  .top nav { display: flex; gap: clamp(14px, 3vw, 28px); }
-  .top nav a { text-decoration: none; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 24px; padding-bottom: 24px; }
+  .top nav { display: flex; align-items: center; gap: 8px; }
+  .top nav a { text-decoration: none; color: var(--muted); padding: 4px 0; border-bottom: 2px solid transparent; }
+  .top nav a:hover { color: var(--amber); }
+  .top nav a[aria-current="page"] { color: var(--text); border-bottom-color: var(--amber); }
+  .top nav a[aria-current="page"]:hover { color: var(--amber); }
+  .top nav .dot { color: #5c5c5c; }
   .brand { font-weight: 600; text-decoration: none; }
 
   /* Hero: framed like a data window in the viewer */
@@ -118,11 +122,11 @@
 <body>
 
 <header class="wrap top">
-  <a class="brand" href="#top">Brandon Young</a>
-  <nav class="mono">
-    <a href="#tools">Tools</a>
-    <a href="#about">About</a>
-    <a href="vfx/#reel">Reel</a>
+  <a class="brand" href="/">Brandon Young</a>
+  <nav class="mono" aria-label="Primary">
+    <a href="/#tools" aria-current="page">Tools</a><span class="dot" aria-hidden="true">·</span>
+    <a href="/vfx/">VFX</a><span class="dot" aria-hidden="true">·</span>
+    <a href="/#about">About</a>
   </nav>
 </header>
 
@@ -264,7 +268,7 @@
       <p class="statement">My focus is on tools that are simple to deploy, clear about their failures, and reliable in daily use.</p>
       <p class="links">
         <a href="mailto:brandon@byvfx.com">brandon@byvfx.com</a>
-        <a href="vfx/">VFX work at byvfx.com</a>
+        <a href="/vfx/">VFX work at byvfx.com</a>
         <a href="https://github.com/byvfx">GitHub</a>
         <a href="https://www.linkedin.com/in/brandoncyoung">LinkedIn</a>
         <a href="https://vimeo.com/byvfx">Vimeo</a>
